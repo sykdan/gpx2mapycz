@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript" src="https://api.mapy.cz/loader.js"></script>
     <title>Převaděč GPX na Mapy.cz navigaci</title>
 
     <style>
         * {
             font-family: sans-serif;
+            text-align: center;
         }
 
         h2 {
@@ -55,63 +55,17 @@
     <h1>Převaděč GPX na Mapy.cz navigaci</h1>
     <h2>Vyber soubor k převodu:</h2>
     <input type="file" id="gpxsoubor">
+
+    <div style="margin-top: 16px;">
+        po přečtení souboru se níže objeví odkaz na Mapy.cz
+    </div>
+
     <div id="links"></div>
-    <script>
-        function parse(what, name) {
-            let dp = new DOMParser();
-            let gpx = dp.parseFromString(what, "text/xml");
-            let waypoints = gpx.getElementsByTagName("rtept");
 
-            if (waypoints.length) {
-                let path = new SMap.URL.Route();
+    <div style="margin-top: 16px;">
+        vytvořil Daniel Sýkora
+    </div>
 
-                for (let i = 0; i < waypoints.length; i++) {
-                    let coord = SMap.Coords.fromWGS84(
-                        parseFloat(waypoints[i].getAttribute("lon")),
-                        parseFloat(waypoints[i].getAttribute("lat"))
-                    );
+    <script src="script.js"></script>
 
-                    if (i == 0) {
-                        path.addStart(coord)
-                    } else if (i == waypoints.length - 1) {
-                        path.addDestination(coord)
-                    } else {
-                        path.addWaypoint(coord)
-                    }
-                }
-
-                let a = document.createElement("a");
-                a.href = path.toString();
-                a.target = "_blank";
-                a.innerText = name
-                document.getElementById("links").appendChild(a)
-            } else {
-                alert("Zvolený soubor nejspíš není v správném formátu. Ujisti se, že tvůj GPX soubor není typu track (převést lze pouze typ waypoint)")
-            }
-        }
-
-        document.getElementById("gpxsoubor").onchange = (e) => {
-            let open = e.target.files[0];
-
-            if (!open) {
-                return;
-            }
-
-            if (!open.name.endsWith(".gpx")) {
-                alert("Vyber prosím soubor .gpx.");
-                return;
-            }
-
-            let read = new FileReader();
-
-            read.onload = (e) => {
-                let contents = e.target.result;
-                let node = parse(contents, open.name);
-            };
-
-            read.readAsText(open);
-        }
-
-        Loader.load(null);
-    </script>
 </html>
